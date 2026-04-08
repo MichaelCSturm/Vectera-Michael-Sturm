@@ -28,11 +28,11 @@ Architecture
 text
 
 PDF Files → Snowflake Stage (@REPORTS)
-         ↓
+         → 
     REPORTS Table (raw PDF text + metadata)
-         ↓
+         → 
     reports_chunked Table (chunked text with metadata)
-         ↓
+         → 
     REPORTS_LLM() UDF (retrieval + answer generation)
 
 Setup:
