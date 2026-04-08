@@ -24,8 +24,8 @@ Features
 
     Persistent Storage: All processed content stored in Snowflake tables
 
-Architecture
-text
+# Architecture
+
 
 PDF Files → Snowflake Stage (@REPORTS)
          → 
@@ -37,49 +37,49 @@ PDF Files → Snowflake Stage (@REPORTS)
 
 Setup:
 
-In snowflake workspace in a ipybn file create a simple vector database. 
+In snowflake workspace in a ipybn file create a vector database. 
 
 
 
 Then create a chunk database like this for example:
 
-CREATE OR REPLACE TABLE reports_chunked AS 
-WITH RECURSIVE split_contents AS (
+    CREATE OR REPLACE TABLE reports_chunked AS 
+    WITH RECURSIVE split_contents AS (
+        SELECT 
+            file_name,
+            SUBSTRING(contents, 1, 3000) AS chunk_text,
+            SUBSTRING(contents, 2001) AS remaining_contents,
+            1 AS chunk_number
+        FROM 
+            reports
+    
+        UNION ALL
+    
+        SELECT 
+            file_name,
+            SUBSTRING(remaining_contents, 1, 3000),
+            SUBSTRING(remaining_contents, 2001),
+            chunk_number + 1
+        FROM 
+            split_contents
+        WHERE 
+            LENGTH(remaining_contents) > 0
+    )
     SELECT 
         file_name,
-        SUBSTRING(contents, 1, 3000) AS chunk_text,
-        SUBSTRING(contents, 2001) AS remaining_contents,
-        1 AS chunk_number
-    FROM 
-        reports
-
-    UNION ALL
-
-    SELECT 
-        file_name,
-        SUBSTRING(remaining_contents, 1, 3000),
-        SUBSTRING(remaining_contents, 2001),
-        chunk_number + 1
+        chunk_number,
+        chunk_text,
+        CONCAT(
+            'Sampled contents from reports [', 
+            file_name,
+            ']: ', 
+            chunk_text
+        ) AS combined_chunk_text
     FROM 
         split_contents
-    WHERE 
-        LENGTH(remaining_contents) > 0
-)
-SELECT 
-    file_name,
-    chunk_number,
-    chunk_text,
-    CONCAT(
-        'Sampled contents from reports [', 
+    ORDER BY 
         file_name,
-        ']: ', 
-        chunk_text
-    ) AS combined_chunk_text
-FROM 
-    split_contents
-ORDER BY 
-    file_name,
-    chunk_number;
-
+        chunk_number;
+    
 
 Finally test this streamlit app!
