@@ -80,6 +80,7 @@ Then create a chunk database like this for example:
     ORDER BY 
         file_name,
         chunk_number;
-    
+        
+You'll have to hire me to get the full setup! :)
 
 Finally test this streamlit app!
