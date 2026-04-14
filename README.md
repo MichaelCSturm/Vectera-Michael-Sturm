@@ -1,4 +1,3 @@
-# Technical Assesment
 
 https://app.snowflake.com/streamlit/ngqfvdy/jj33982/#/apps/33mb2s7t27hxk62px6ka
 
